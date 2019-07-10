@@ -1,0 +1,6 @@
+# git.apache.org/thrift.git v0.0.0-20150427210205-dc799ca07862
+git.apache.org/thrift.git/lib/go/thrift
+# shared v0.0.0 => ./gen-go/shared
+shared
+# tutorial v0.0.0 => ./gen-go/tutorial
+tutorial
