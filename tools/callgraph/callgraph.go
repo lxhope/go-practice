@@ -19,10 +19,13 @@ var stdout io.Writer = os.Stdout
 var (
 	modFlag = flag.String("mod", "",
 		"Use mod like build system.")
+	focusFlag = flag.String("focus", "",
+		"Focus on these packages, separated by comma, only output call graph in these packages.")
 )
 
 func main() {
 	flag.Parse()
+	initCheckCond(*focusFlag)
 	if err := doCallgraph("", *modFlag, flag.Args()); err != nil {
 		fmt.Fprintf(os.Stderr, "callgraph: %s\n", err)
 		os.Exit(1)
@@ -106,7 +109,10 @@ func output(cg *callgraph.Graph, fset *token.FileSet) error {
 		if isInitFunc(caller.Func.Name()) && isInitFunc(callee.Func.Name()) {
 			return nil
 		}
-		if caller.Func.Pkg != nil && isStandardPackage(caller.Func.Pkg.Pkg.Path()) {
+		if caller.Func.Pkg != nil && isStandardPkg(caller.Func.Pkg.Pkg.Path()) {
+			return nil
+		}
+		if caller.Func.Pkg != nil && !isFocus(caller.Func.Pkg.Pkg.Path()) {
 			return nil
 		}
 
