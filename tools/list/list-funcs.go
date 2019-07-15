@@ -25,6 +25,8 @@ var (
 		`Packages path`)
 	nostdFlag = flag.Bool("nostd", true,
 		`Don't output standard package's functions`)
+	modFlag = flag.String("mod", "",
+		"Use mod like build system.")
 )
 
 func init() {
@@ -33,16 +35,22 @@ func init() {
 
 func main() {
 	flag.Parse()
-	if err := listFuncs(*dirFlag, *nostdFlag, flag.Args()); err != nil {
+	if err := listFuncs(*dirFlag, *nostdFlag, *modFlag, flag.Args()); err != nil {
 		fmt.Fprintf(os.Stderr, "list-funcs: %s\n", err)
 		os.Exit(1)
 	}
 }
 
-func listFuncs(dir string, nostd bool, args []string) error {
+func listFuncs(dir string, nostd bool, mod string, args []string) error {
+	var buildFlags []string
+	if len(mod) > 0 {
+		modArg := fmt.Sprintf("-mod=%s", mod)
+		buildFlags = []string{modArg}
+	}
 	cfg := &packages.Config{
-		Mode: packages.LoadAllSyntax,
-		Dir:  dir,
+		Mode:       packages.LoadAllSyntax,
+		Dir:        dir,
+		BuildFlags: buildFlags,
 	}
 	initial, err := packages.Load(cfg, args...)
 	if err != nil {
@@ -58,6 +66,9 @@ func listFuncs(dir string, nostd bool, args []string) error {
 
 	funcs := ssautil.AllFunctions(prog)
 	for fn := range funcs {
+		if fn.Synthetic != "" { // exclude synthetic wrappers
+			continue
+		}
 		pkgPath := getPackagePath((fn))
 		if nostd && isStandardPackage(pkgPath) {
 			continue
@@ -83,11 +94,8 @@ func getPackagePath(fn *ssa.Function) string {
 	var path string
 	if fn.Pkg != nil {
 		path = fn.Pkg.Pkg.Path()
-	} else { // for shared funcs
-		name := strings.TrimPrefix(fn.String(), "(")
-		name = strings.TrimPrefix(name, "*")
-		name = strings.TrimPrefix(name, "struct{")
-		path = strings.Split(name, ".")[0]
+	} else { // for root node
+		path = ""
 	}
 	return path
 }
