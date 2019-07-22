@@ -1,0 +1,21 @@
+[
+    {
+        "name":"Eat",
+        "type":1,
+        "in":[
+            {
+                "name":"Potato"
+            }
+        ],
+        "check_items":[
+            {
+                "field":"Code",
+                "expected":3
+            },
+            {
+                "field":"Message",
+                "expected":"succ"
+            }
+        ]
+    }
+]

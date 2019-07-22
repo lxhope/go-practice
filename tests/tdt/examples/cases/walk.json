@@ -1,0 +1,15 @@
+[
+    {
+        "name":"Walk",
+        "type":2,
+        "in":[
+            5
+        ],
+        "check_items":[
+            {
+                "field":"Code",
+                "expected":1
+            }
+        ]
+    }
+]

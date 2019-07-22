@@ -12,18 +12,18 @@ const (
 )
 
 type TestCase struct {
-	Name       string
-	Type       int
-	In         []interface{}
-	CheckItems []CheckItem
+	Name       string        `json:"name"`
+	Type       int           `json:"type"`
+	In         []interface{} `json:"in"`
+	CheckItems []CheckItem   `json:"check_items"`
 }
 
 type CheckItem struct {
-	Field    string
-	Expected interface{}
+	Field    string      `json:"field"`
+	Expected interface{} `json:"expected"`
 }
 
-func loadCases(filepath string) (cases []TestCase, err error) {
+func LoadCases(filepath string) (cases []TestCase, err error) {
 	file, _ := os.Open(filepath)
 
 	data := []TestCase{}

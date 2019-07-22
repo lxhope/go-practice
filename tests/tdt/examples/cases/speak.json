@@ -1,0 +1,15 @@
+[
+    {
+        "name":"Speak",
+        "type":2,
+        "in":[
+            "Hello"
+        ],
+        "check_items":[
+            {
+                "field":"Message",
+                "expected":"ok"
+            }
+        ]
+    }
+]
